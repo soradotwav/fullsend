@@ -1,13 +1,46 @@
 {
   "name": "fullsend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Bundle multiple files into a single formatted output for AI chat interfaces",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "bin": {
+    "fullsend": "./index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs"
+  "scripts": {
+    "start": "node index.js",
+    "test": "node index.js ./test-project"
+  },
+  "keywords": [
+    "cli",
+    "files",
+    "bundler",
+    "formatter",
+    "ai",
+    "chatgpt",
+    "claude",
+    "llm"
+  ],
+  "author": "soradotwav <dev@soradotwav.com>",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/soradotwav/fullsend.git"
+  },
+  "bugs": {
+    "url": "https://github.com/soradotwav/fullsend.git/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "chalk": "^5.6.2",
+    "clipboardy": "^5.0.0",
+    "commander": "^14.0.2",
+    "ignore": "^7.0.5",
+    "ora": "^9.0.0"
+  },
+  "devDependencies": {
+    "prettier": "3.6.2"
+  }
 }

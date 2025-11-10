@@ -6,12 +6,9 @@ import clipboardy from "clipboardy";
 import ora from "ora";
 import fs from "fs/promises";
 import path from "path";
-import { fileURLToPath } from "url";
 import { scanDirectory } from "./lib/scanner.js";
 import { formatOutput } from "./lib/formatter.js";
 import { generateTree } from "./lib/tree.js";
-
-const __filename = fileURLToPath(import.meta.url);
 
 const program = new Command();
 
