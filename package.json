@@ -1,6 +1,6 @@
 {
   "name": "fullsend",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Bundle multiple files into a single formatted output for AI chat interfaces",
   "main": "index.js",
   "bin": {
