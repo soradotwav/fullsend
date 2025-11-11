@@ -1,0 +1,61 @@
+name: Publish to npm
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2 
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Check if version changed
+        id: version-check
+        run: |
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "current-version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          
+          # Check if this version exists on npm
+          if npm view $(node -p "require('./package.json').name")@$CURRENT_VERSION version 2>/dev/null; then
+            echo "version-changed=false" >> $GITHUB_OUTPUT
+            echo "Version $CURRENT_VERSION already exists on npm"
+          else
+            echo "version-changed=true" >> $GITHUB_OUTPUT
+            echo "New version detected: $CURRENT_VERSION"
+          fi
+
+      - name: Install dependencies
+        if: steps.version-check.outputs.version-changed == 'true'
+        run: npm ci
+
+      - name: Run tests
+        if: steps.version-check.outputs.version-changed == 'true'
+        run: npm test
+
+      - name: Publish to npm
+        if: steps.version-check.outputs.version-changed == 'true'
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create Git tag
+        if: steps.version-check.outputs.version-changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "v${{ steps.version-check.outputs.current-version }}"
+          git push origin "v${{ steps.version-check.outputs.current-version }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
