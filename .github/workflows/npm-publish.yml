@@ -1,4 +1,4 @@
-name: Publish to npm
+name: Publish Package
 
 on:
   push:
@@ -8,12 +8,12 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 2 
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -25,15 +25,14 @@ jobs:
         id: version-check
         run: |
           CURRENT_VERSION=$(node -p "require('./package.json').version")
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
           echo "current-version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          echo "package-name=$PACKAGE_NAME" >> $GITHUB_OUTPUT
           
-          # Check if this version exists on npm
-          if npm view $(node -p "require('./package.json').name")@$CURRENT_VERSION version 2>/dev/null; then
+          if npm view $PACKAGE_NAME@$CURRENT_VERSION version 2>/dev/null; then
             echo "version-changed=false" >> $GITHUB_OUTPUT
-            echo "Version $CURRENT_VERSION already exists on npm"
           else
             echo "version-changed=true" >> $GITHUB_OUTPUT
-            echo "New version detected: $CURRENT_VERSION"
           fi
 
       - name: Install dependencies
@@ -50,12 +49,19 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Create Git tag
+      - name: Create GitHub Release
         if: steps.version-check.outputs.version-changed == 'true'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag "v${{ steps.version-check.outputs.current-version }}"
-          git push origin "v${{ steps.version-check.outputs.current-version }}"
+        uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.version-check.outputs.current-version }}
+          release_name: Release v${{ steps.version-check.outputs.current-version }}
+          body: |
+            ## Release v${{ steps.version-check.outputs.current-version }}
+            
+            **Install:** `npm install -g fullsend@${{ steps.version-check.outputs.current-version }}`
+            
+            **npm:** https://www.npmjs.com/package/fullsend
+          draft: false
+          prerelease: false

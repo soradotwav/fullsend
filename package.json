@@ -1,6 +1,6 @@
 {
   "name": "fullsend",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Bundle multiple files into a single formatted output for AI chat interfaces",
   "main": "index.js",
   "bin": {
@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node index.js",
-    "test": "node index.js ./test-project"
+    "test": "node index.js ./"
   },
   "keywords": [
     "cli",
