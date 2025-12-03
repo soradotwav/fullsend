@@ -16,7 +16,7 @@ const program = new Command();
 program
   .name("fullsend")
   .description("Send your entire codebase to AI chat interfaces")
-  .version("1.0.0")
+  .version(process.env.npm_package_version)
   .argument("<directory>", "Directory to scan")
   .option("-o, --output <file>", "Output to file instead of clipboard")
   .option("-x, --xml", "Output in XML format (optimized for Claude)")
@@ -62,8 +62,8 @@ program
         files.forEach((file) => {
           console.log(
             chalk.dim(
-              `  ${file.relativePath} (${(file.size / 1024).toFixed(1)} KB)`,
-            ),
+              `  ${file.relativePath} (${(file.size / 1024).toFixed(1)} KB)`
+            )
           );
         });
         process.exit(0);
@@ -86,7 +86,7 @@ program
           fileTree,
           baseDir: targetDir,
         },
-        { xml: options.xml },
+        { xml: options.xml }
       );
 
       const tokenCount = await countTokens(output);
@@ -107,17 +107,17 @@ program
           const fallbackPath = path.join(process.cwd(), "fullsend-output.txt");
           await fs.writeFile(fallbackPath, output, "utf-8");
           console.log(
-            chalk.yellow(`Clipboard unavailable. Saved to: ${fallbackPath}`),
+            chalk.yellow(`Clipboard unavailable. Saved to: ${fallbackPath}`)
           );
         }
       }
 
       // Show final metrics
       console.log(
-        chalk.dim(`Output size: ${(outputSize / 1024).toFixed(1)} KB`),
+        chalk.dim(`Output size: ${(outputSize / 1024).toFixed(1)} KB`)
       );
       console.log(
-        chalk.dim(`Tokens (GPT-4/Claude): ${tokenCount.toLocaleString()}`),
+        chalk.dim(`Tokens (GPT-4/Claude): ${tokenCount.toLocaleString()}`)
       );
 
       if (options.verbose) {
