@@ -1,7 +1,7 @@
 {
   "name": "fullsend",
-  "version": "1.0.4",
-  "description": "Bundle multiple files into a single formatted output for AI chat interfaces",
+  "version": "1.0.5",
+  "description": "Bundle files into a single formatted output for AI chat interfaces",
   "main": "index.js",
   "bin": {
     "fullsend": "./index.js"
@@ -45,6 +45,7 @@
     "clipboardy": "^5.0.0",
     "commander": "^14.0.2",
     "ignore": "^7.0.5",
+    "js-tiktoken": "^1.0.21",
     "ora": "^9.0.0"
   },
   "devDependencies": {

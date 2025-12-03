@@ -9,6 +9,7 @@ import path from "path";
 import { scanDirectory } from "./lib/scanner.js";
 import { formatOutput } from "./lib/formatter.js";
 import { generateTree } from "./lib/tree.js";
+import { countTokens } from "./lib/token-counter.js";
 
 const program = new Command();
 
@@ -60,8 +61,8 @@ program
         files.forEach((file) => {
           console.log(
             chalk.dim(
-              `  ${file.relativePath} (${(file.size / 1024).toFixed(1)} KB)`,
-            ),
+              `  ${file.relativePath} (${(file.size / 1024).toFixed(1)} KB)`
+            )
           );
         });
         process.exit(0);
@@ -84,6 +85,8 @@ program
         baseDir: targetDir,
       });
 
+      const tokenCount = await countTokens(output);
+
       formattingSpinner.succeed(chalk.green("Formatting complete"));
 
       // Output result
@@ -100,18 +103,17 @@ program
           const fallbackPath = path.join(process.cwd(), "fullsend-output.txt");
           await fs.writeFile(fallbackPath, output, "utf-8");
           console.log(
-            chalk.yellow(`Clipboard unavailable. Saved to: ${fallbackPath}`),
+            chalk.yellow(`Clipboard unavailable. Saved to: ${fallbackPath}`)
           );
         }
       }
 
       // Show final metrics
       console.log(
-        chalk.dim(`Output size: ${(outputSize / 1024).toFixed(1)} KB`),
+        chalk.dim(`Output size: ${(outputSize / 1024).toFixed(1)} KB`)
       );
-      const estimatedTokens = Math.ceil(output.length / 4);
       console.log(
-        chalk.dim(`Estimated tokens: ~${estimatedTokens.toLocaleString()}`),
+        chalk.dim(`Tokens (GPT-4/Claude): ${tokenCount.toLocaleString()}`)
       );
 
       if (options.verbose) {
