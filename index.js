@@ -1,85 +1,104 @@
 #!/usr/bin/env node
 
 import { Command } from "commander";
-import chalk from "chalk";
 import clipboardy from "clipboardy";
-import ora from "ora";
 import fs from "fs/promises";
 import path from "path";
 import { scanDirectory } from "./lib/scanner.js";
 import { formatOutput } from "./lib/formatter.js";
 import { generateTree } from "./lib/tree.js";
 import { countTokens } from "./lib/token-counter.js";
+import { createProgress, yieldToEventLoop } from "./lib/ui.js";
 
 const program = new Command();
 
 program
   .name("fullsend")
   .description("Send your entire codebase to AI chat interfaces")
-  .version("1.0.7")
+  .version("1.1.0")
   .argument("<directory>", "Directory to scan")
   .option("-o, --output <file>", "Output to file instead of clipboard")
   .option("-x, --xml", "Output in XML format (optimized for Claude)")
-  .option("--no-tree", "Exclude file tree from output")
+  .option("--tree", "Include file tree in output")
   .option("--no-gitignore", "Don't use .gitignore patterns")
   .option("--dry-run", "Preview files without generating output")
   .option("--verbose", "Show detailed information")
   .action(async (directory, options) => {
-    const spinner = ora("Initializing...").start();
+    const progress = createProgress();
+
+    // Handle Ctrl+C gracefully
+    process.on("SIGINT", () => {
+      progress.stop();
+      console.log("\n");
+      console.log("  ✖ Cancelled");
+      console.log("\n");
+      process.exit(1);
+    });
+
+    const startTime = Date.now();
 
     try {
       const targetDir = path.resolve(directory);
 
-      // Check if directory exists
       try {
         await fs.access(targetDir);
       } catch {
-        spinner.fail(chalk.red(`Directory not found: ${targetDir}`));
+        progress.fail(`Directory not found: ${targetDir}`);
         process.exit(1);
       }
 
-      // Scan directory
-      spinner.text = "Scanning files...";
-      const files = await scanDirectory(targetDir, [], {
+      // 1. Scanning
+      progress.start("Scanning");
+
+      let fileCount = 0;
+      let lastUpdate = Date.now();
+
+      const { files, metadata } = await scanDirectory(targetDir, [], {
         useGitignore: options.gitignore !== false,
-        verbose: options.verbose,
+        onProgress: () => {
+          fileCount++;
+          const now = Date.now();
+          if (now - lastUpdate > 100) {
+            progress.update("Scanning", `${fileCount.toLocaleString()} files`);
+            lastUpdate = now;
+            if (fileCount > 10000) progress.setWarning(true);
+          }
+        },
       });
 
       if (files.length === 0) {
-        spinner.fail(chalk.yellow("No files found"));
+        progress.fail("No files found");
         process.exit(0);
       }
 
-      spinner.succeed(chalk.green(`Found ${files.length} files`));
+      progress.setWarning(false);
 
-      // Calculate total size
-      const totalSize = files.reduce((sum, file) => sum + file.size, 0);
-      console.log(chalk.dim(`Total size: ${(totalSize / 1024).toFixed(1)} KB`));
-
-      // Dry run mode
+      // 2. Dry Run
       if (options.dryRun) {
-        console.log(chalk.cyan("\nFiles to be included:"));
-        files.forEach((file) => {
-          console.log(
-            chalk.dim(
-              `  ${file.relativePath} (${(file.size / 1024).toFixed(1)} KB)`
-            )
-          );
+        const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+        progress.succeed({
+          files,
+          size: files.reduce((acc, f) => acc + f.size, 0),
+          tokens: 0,
+          destination: null,
+          elapsed,
+          dryRun: true,
+          fileList: files, // Pass files for tree rendering
+          tree: true, // Force tree show on dry run
         });
         process.exit(0);
       }
 
-      // Generate file tree
+      // 3. Formatting
+      progress.update("Formatting");
+      await yieldToEventLoop();
+
+      // Generate full text tree for the OUTPUT content
       let fileTree = "";
-      if (options.tree !== false) {
-        console.log(chalk.cyan("\nFile Structure:"));
-        const coloredTree = generateTree(targetDir, files, true);
-        console.log(coloredTree);
+      if (options.tree) {
         fileTree = generateTree(targetDir, files, false);
       }
 
-      // Format output
-      const formattingSpinner = ora("Formatting output...").start();
       const output = await formatOutput(
         {
           files,
@@ -89,43 +108,43 @@ program
         { xml: options.xml }
       );
 
+      // 4. Counting tokens
+      progress.update("Counting tokens");
       const tokenCount = await countTokens(output);
 
-      formattingSpinner.succeed(chalk.green("Formatting complete"));
+      // 5. Output
+      progress.update("Copying");
+      await yieldToEventLoop();
 
-      // Output result
-      const outputSize = Buffer.byteLength(output, "utf-8");
+      let destination = "Clipboard";
       if (options.output) {
         const outputPath = path.resolve(options.output);
         await fs.writeFile(outputPath, output, "utf-8");
-        console.log(chalk.green(`Output saved to: ${outputPath}`));
+        destination = path.basename(outputPath);
       } else {
         try {
           await clipboardy.write(output);
-          console.log(chalk.green("Output copied to clipboard"));
-        } catch (clipError) {
+        } catch {
           const fallbackPath = path.join(process.cwd(), "fullsend-output.txt");
           await fs.writeFile(fallbackPath, output, "utf-8");
-          console.log(
-            chalk.yellow(`Clipboard unavailable. Saved to: ${fallbackPath}`)
-          );
+          destination = path.basename(fallbackPath);
         }
       }
 
-      // Show final metrics
-      console.log(
-        chalk.dim(`Output size: ${(outputSize / 1024).toFixed(1)} KB`)
-      );
-      console.log(
-        chalk.dim(`Tokens (GPT-4/Claude): ${tokenCount.toLocaleString()}`)
-      );
+      const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
 
-      if (options.verbose) {
-        console.log(chalk.dim(`\nProcessed directory: ${targetDir}`));
-        console.log(chalk.dim(`Files included: ${files.length}`));
-      }
+      progress.succeed({
+        files,
+        size: Buffer.byteLength(output, "utf-8"),
+        tokens: tokenCount,
+        destination,
+        elapsed,
+        dryRun: false,
+        tree: options.tree,
+        fileList: files,
+      });
     } catch (error) {
-      spinner.fail(chalk.red(`Error: ${error.message}`));
+      progress.fail(error.message);
       if (options.verbose) {
         console.error(error.stack);
       }
