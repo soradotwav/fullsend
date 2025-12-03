@@ -16,9 +16,10 @@ const program = new Command();
 program
   .name("fullsend")
   .description("Send your entire codebase to AI chat interfaces")
-  .version("1.0.0")
+  .version("1.0.6")
   .argument("<directory>", "Directory to scan")
   .option("-o, --output <file>", "Output to file instead of clipboard")
+  .option("-x, --xml", "Output in XML format (optimized for Claude)")
   .option("--no-tree", "Exclude file tree from output")
   .option("--no-gitignore", "Don't use .gitignore patterns")
   .option("--dry-run", "Preview files without generating output")
@@ -79,11 +80,14 @@ program
 
       // Format output
       const formattingSpinner = ora("Formatting output...").start();
-      const output = await formatOutput({
-        files,
-        fileTree,
-        baseDir: targetDir,
-      });
+      const output = await formatOutput(
+        {
+          files,
+          fileTree,
+          baseDir: targetDir,
+        },
+        { xml: options.xml }
+      );
 
       const tokenCount = await countTokens(output);
 

@@ -50,15 +50,16 @@ fullsend <directory> [options]
 
 ### Options
 
-| Option | Description |
-|--------|-------------|
-| `-o, --output <file>` | Save to file instead of clipboard |
-| `--no-tree` | Exclude file tree from output |
-| `--no-gitignore` | Don't use .gitignore patterns |
-| `--dry-run` | Preview files without generating output |
-| `--verbose` | Show detailed information |
-| `-h, --help` | Display help information |
-| `-V, --version` | Display version number |
+| Option                | Description                                 |
+|-----------------------|---------------------------------------------|
+| `-o, --output <file>` | Save to file instead of clipboard           |
+| `-x, --xml`           | Output in XML format (optimized for Claude) |
+| `--no-tree`           | Exclude file tree from output               |
+| `--no-gitignore`      | Don't use .gitignore patterns               |
+| `--dry-run`           | Preview files without generating output     |
+| `--verbose`           | Show detailed information                   |
+| `-h, --help`          | Display help information                    |
+| `-V, --version`       | Display version number                      |
 
 ## Examples
 
@@ -86,6 +87,16 @@ fullsend ./my-project --no-tree
 
 # Don't use .gitignore
 fullsend ./my-project --no-gitignore
+```
+
+### Claude-Optimized Output
+
+```bash
+# XML format works best with Claude
+fullsend ./my-project -x
+
+# Combine with file output
+fullsend ./my-project -x -o context.xml
 ```
 
 ### Real-World Examples
@@ -192,7 +203,7 @@ fullsend ./my-project
 Output includes:
 ```
 Output size: 45.2 KB
-Estimated tokens: ~11,234
+Tokens (GPT-4/Claude): 11,234
 ```
 
 Typical token counts:
