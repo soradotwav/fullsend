@@ -16,7 +16,7 @@ const program = new Command();
 program
   .name("fullsend")
   .description("Send your entire codebase to AI chat interfaces")
-  .version(process.env.npm_package_version)
+  .version("1.0.6")
   .argument("<directory>", "Directory to scan")
   .option("-o, --output <file>", "Output to file instead of clipboard")
   .option("-x, --xml", "Output in XML format (optimized for Claude)")
