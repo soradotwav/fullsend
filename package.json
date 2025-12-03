@@ -1,6 +1,6 @@
 {
   "name": "fullsend",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Bundle files into a single formatted output for AI chat interfaces",
   "main": "index.js",
   "bin": {
@@ -46,7 +46,8 @@
     "commander": "^14.0.2",
     "ignore": "^7.0.5",
     "js-tiktoken": "^1.0.21",
-    "ora": "^9.0.0"
+    "ora": "^9.0.0",
+    "p-limit": "^7.2.0"
   },
   "devDependencies": {
     "prettier": "3.6.2"
