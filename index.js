@@ -19,6 +19,7 @@ program
   .version("1.0.0")
   .argument("<directory>", "Directory to scan")
   .option("-o, --output <file>", "Output to file instead of clipboard")
+  .option("-x, --xml", "Output in XML format (optimized for Claude)")
   .option("--no-tree", "Exclude file tree from output")
   .option("--no-gitignore", "Don't use .gitignore patterns")
   .option("--dry-run", "Preview files without generating output")
@@ -61,8 +62,8 @@ program
         files.forEach((file) => {
           console.log(
             chalk.dim(
-              `  ${file.relativePath} (${(file.size / 1024).toFixed(1)} KB)`
-            )
+              `  ${file.relativePath} (${(file.size / 1024).toFixed(1)} KB)`,
+            ),
           );
         });
         process.exit(0);
@@ -79,11 +80,14 @@ program
 
       // Format output
       const formattingSpinner = ora("Formatting output...").start();
-      const output = await formatOutput({
-        files,
-        fileTree,
-        baseDir: targetDir,
-      });
+      const output = await formatOutput(
+        {
+          files,
+          fileTree,
+          baseDir: targetDir,
+        },
+        { xml: options.xml },
+      );
 
       const tokenCount = await countTokens(output);
 
@@ -103,17 +107,17 @@ program
           const fallbackPath = path.join(process.cwd(), "fullsend-output.txt");
           await fs.writeFile(fallbackPath, output, "utf-8");
           console.log(
-            chalk.yellow(`Clipboard unavailable. Saved to: ${fallbackPath}`)
+            chalk.yellow(`Clipboard unavailable. Saved to: ${fallbackPath}`),
           );
         }
       }
 
       // Show final metrics
       console.log(
-        chalk.dim(`Output size: ${(outputSize / 1024).toFixed(1)} KB`)
+        chalk.dim(`Output size: ${(outputSize / 1024).toFixed(1)} KB`),
       );
       console.log(
-        chalk.dim(`Tokens (GPT-4/Claude): ${tokenCount.toLocaleString()}`)
+        chalk.dim(`Tokens (GPT-4/Claude): ${tokenCount.toLocaleString()}`),
       );
 
       if (options.verbose) {
