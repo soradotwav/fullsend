@@ -144,3 +144,4 @@ vite.config.ts.timestamp-*
 .DS_Store
 pnpm-lock.yaml
 pnpm-workspace.yaml
+.fullsendrc
