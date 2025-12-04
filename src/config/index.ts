@@ -131,7 +131,7 @@ const DEFAULT_IGNORE_PATTERNS: readonly string[] = [
 ];
 
 /** Default configuration values applied when user config is missing or partial */
-const DEFAULT_USER_CONFIG: FullsendConfig = {
+export const DEFAULT_USER_CONFIG: FullsendConfig = {
   ignorePatterns: [...DEFAULT_IGNORE_PATTERNS],
   useGitIgnore: true,
   verbose: false,
@@ -228,12 +228,13 @@ function resolveConfig(config: UserConfig): FullsendConfig {
 export async function loadConfig(projectRoot: string, overrides: UserConfig) {
   let userConfig: UserConfig = {};
 
+  // Load default config from ~/.fullsendrc
   try {
     const defaultConfigFile = await readFile(
       path.join(os.homedir(), DEFAULT_CONFIG_NAME),
       "utf8"
     );
-    const parsedFile = JSON.parse(defaultConfigFile);
+    const parsedFile: unknown = JSON.parse(defaultConfigFile);
 
     if (isValidUserConfig(parsedFile)) {
       userConfig = mergeConfigs(userConfig, parsedFile);
@@ -251,12 +252,13 @@ export async function loadConfig(projectRoot: string, overrides: UserConfig) {
     }
   }
 
+  // Load project config from ./fullsendrc
   try {
     const projectConfigFile = await readFile(
       path.join(projectRoot, DEFAULT_CONFIG_NAME),
       "utf8"
     );
-    const parsedFile = JSON.parse(projectConfigFile);
+    const parsedFile: unknown = JSON.parse(projectConfigFile);
 
     if (isValidUserConfig(parsedFile)) {
       userConfig = mergeConfigs(userConfig, parsedFile);
@@ -274,9 +276,8 @@ export async function loadConfig(projectRoot: string, overrides: UserConfig) {
     }
   }
 
+  // Load CLI overrides
   userConfig = mergeConfigs(userConfig, overrides);
 
   return resolveConfig(userConfig);
 }
-
-console.log(await loadConfig(".", { format: "xml" }));
