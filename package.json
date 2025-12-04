@@ -1,0 +1,59 @@
+{
+  "name": "fullsend",
+  "version": "2.0.0",
+  "description": "Bundle files into a single formatted output for AI chat interfaces",
+  "type": "module",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "bin": {
+    "fullsend": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "test": "node --import tsx --test \"tests/**/*.test.ts\"",
+    "prepublishOnly": "pnpm run clean && pnpm run build"
+  },
+  "keywords": [
+    "cli",
+    "files",
+    "bundler",
+    "formatter",
+    "ai",
+    "chatgpt",
+    "claude",
+    "llm"
+  ],
+  "author": "soradotwav <dev@soradotwav.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/soradotwav/fullsend.git"
+  },
+  "packageManager": "pnpm@10.24.0",
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/node": "^24.10.1",
+    "eslint": "^9.39.1",
+    "globals": "^16.5.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.48.1"
+  }
+}
