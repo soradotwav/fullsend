@@ -51,10 +51,10 @@ fullsend <directory> [options]
 ### Options
 
 | Option                | Description                                 |
-|-----------------------|---------------------------------------------|
+| --------------------- | ------------------------------------------- |
 | `-o, --output <file>` | Save to file instead of clipboard           |
 | `-x, --xml`           | Output in XML format (optimized for Claude) |
-| `--no-tree`           | Exclude file tree from output               |
+| `--tree`              | Include file tree in output                 |
 | `--no-gitignore`      | Don't use .gitignore patterns               |
 | `--dry-run`           | Preview files without generating output     |
 | `--verbose`           | Show detailed information                   |
@@ -121,10 +121,10 @@ fullsend generates clean markdown output:
 
 src/
 ├── components/
-│   ├── Header.jsx
-│   └── Footer.jsx
+│ ├── Header.jsx
+│ └── Footer.jsx
 ├── utils/
-│   └── api.js
+│ └── api.js
 └── index.js
 package.json
 
@@ -132,12 +132,12 @@ package.json
 
 src/components/Header.jsx:
 export const Header = () => {
-  return <header>My App</header>;
+return <header>My App</header>;
 };
 
 src/components/Footer.jsx:
 export const Footer = () => {
-  return <footer>© 2024</footer>;
+return <footer>© 2024</footer>;
 };
 ```
 
@@ -188,6 +188,7 @@ tsconfig.json
 ```
 
 The ignore priority is:
+
 1. Default patterns (always applied)
 2. `.gitignore` patterns (if exists)
 3. `.bundleignore` patterns (if exists, can override gitignore)
@@ -201,12 +202,14 @@ fullsend ./my-project
 ```
 
 Output includes:
+
 ```
 Output size: 45.2 KB
 Tokens (GPT-4/Claude): 11,234
 ```
 
 Typical token counts:
+
 - Small project (10-20 files): ~5,000-15,000 tokens
 - Medium project (50-100 files): ~20,000-50,000 tokens
 - Large project (200+ files): ~80,000+ tokens
@@ -216,30 +219,35 @@ Typical token counts:
 ## Use Cases
 
 ### Code Review
+
 ```bash
 fullsend ./my-app
 # Paste into Claude/ChatGPT with: "Please review this codebase for bugs and improvements"
 ```
 
 ### Architecture Help
+
 ```bash
 fullsend ./legacy-project
 # Ask: "Help me refactor this to modern React patterns"
 ```
 
 ### Debugging
+
 ```bash
 fullsend ./api-server -o bug-context.md
 # Share with: "Here's my full codebase. The authentication isn't working..."
 ```
 
 ### Documentation
+
 ```bash
 fullsend ./src -o docs-context.md
 # Request: "Generate comprehensive documentation for this codebase"
 ```
 
 ### Learning
+
 ```bash
 fullsend ./open-source-project
 # Ask: "Explain how this project is structured and how it works"
@@ -250,6 +258,7 @@ fullsend ./open-source-project
 ### 1. Use .bundleignore for Large Projects
 
 Exclude non-essential files to reduce token usage:
+
 ```bash
 # .bundleignore
 *.test.js
@@ -267,6 +276,7 @@ fullsend ./my-project --dry-run
 ### 3. Focus on Specific Directories
 
 Instead of sending the entire project, focus on relevant parts:
+
 ```bash
 fullsend ./src/features/authentication
 ```
@@ -281,8 +291,9 @@ fullsend ./my-app -o context.md
 ### 5. Combine with Specific Questions
 
 When pasting into AI chat, add context:
+
 ```
-Here's my full React application. I'm having issues with state management 
+Here's my full React application. I'm having issues with state management
 in the user authentication flow. Can you help identify the problem?
 
 [paste fullsend output]
@@ -311,6 +322,7 @@ fullsend automatically detects and applies syntax highlighting for:
 ### Clipboard not working on Linux
 
 Install xclip or xsel:
+
 ```bash
 sudo apt-get install xclip  # Ubuntu/Debian
 sudo yum install xclip      # Fedora/RHEL
@@ -319,6 +331,7 @@ sudo yum install xclip      # Fedora/RHEL
 ### "Module not found" errors
 
 Reinstall dependencies:
+
 ```bash
 rm -rf node_modules package-lock.json
 npm install
@@ -327,6 +340,7 @@ npm install
 ### Files not being included
 
 Check what's being ignored:
+
 ```bash
 fullsend ./my-project --dry-run --verbose
 ```
@@ -334,6 +348,7 @@ fullsend ./my-project --dry-run --verbose
 ### Output too large
 
 Use `.bundleignore` to exclude unnecessary files:
+
 ```bash
 echo "*.test.js\ndocs/\nexamples/" > .bundleignore
 fullsend ./my-project
@@ -357,6 +372,7 @@ fullsend ./my-project
 ## Support
 
 If fullsend helps you, please:
+
 - ⭐ Star the repo on GitHub
 - 📦 Share with other developers
 - 🐛 Report bugs and suggest features
