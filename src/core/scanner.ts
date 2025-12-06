@@ -73,5 +73,3 @@ export async function scanDirectory(
 
   return files;
 }
-
-console.log(await scanDirectory("./", {}));
