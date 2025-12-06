@@ -4,7 +4,7 @@ import os from "node:os";
 import path from "node:path";
 
 /** Debug flag controlled by NODE_ENV or manual override */
-const DEBUG: boolean = process.env.NODE_ENV === "development" || true;
+export const DEBUG: boolean = process.env.NODE_ENV === "development" || true;
 
 /** Standard configuration filename */
 const DEFAULT_CONFIG_NAME: string = ".fullsendrc";
@@ -13,7 +13,7 @@ const DEFAULT_CONFIG_NAME: string = ".fullsendrc";
  * List of standard patterns to ignore.
  * Includes VCS, dependencies, build artifacts, logs, and binary files.
  */
-const DEFAULT_IGNORE_PATTERNS: readonly string[] = [
+export const DEFAULT_IGNORE_PATTERNS: readonly string[] = [
   // Version control
   ".git",
   ".svn",
