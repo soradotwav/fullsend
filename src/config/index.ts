@@ -135,7 +135,7 @@ export const DEFAULT_USER_CONFIG: FullsendConfig = {
   useGitIgnore: true,
   verbose: false,
   format: "markdown",
-  showFileTree: true,
+  showFileTree: false,
   maxFileSize: 10 * 1024 * 1024,
 };
 

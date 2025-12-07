@@ -1,7 +1,13 @@
 import { Command } from "commander";
 import { bundleCommand } from "./commands/bundle.js";
+import { renderSplash } from "./ui/splash.js";
 
 export function run(argv: string[]) {
+  if (argv.length <= 2) {
+    renderSplash();
+    return;
+  }
+
   const program = new Command();
 
   program
