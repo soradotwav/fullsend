@@ -1,5 +1,6 @@
 import { Command } from "commander";
 import { bundleCommand } from "./commands/bundle.js";
+import { configCommand } from "./commands/config.js";
 import { renderSplash } from "./ui/splash.js";
 
 export function run(argv: string[]) {
@@ -15,6 +16,7 @@ export function run(argv: string[]) {
     .version("2.0.0")
     .description("Bundle your codebase for AI chat interfaces");
 
+  configCommand(program);
   bundleCommand(program);
 
   program.parse(argv);

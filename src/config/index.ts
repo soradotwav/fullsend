@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import type { FullsendConfig, UserConfig } from "../types.js";
 import os from "node:os";
 import path from "node:path";
@@ -264,4 +264,42 @@ export async function loadConfig(projectRoot: string, overrides: UserConfig) {
   userConfig = mergeConfigs(userConfig, overrides);
 
   return resolveConfig(userConfig);
+}
+
+export async function saveConfigToDisk(config: UserConfig): Promise<boolean> {
+  const configPath = path.join(os.homedir(), DEFAULT_CONFIG_NAME);
+  const configString = JSON.stringify(config, null, 2);
+
+  try {
+    await writeFile(configPath, configString, "utf8");
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+export async function loadConfigFromDisk(): Promise<UserConfig | null> {
+  const configPath = path.join(os.homedir(), DEFAULT_CONFIG_NAME);
+
+  try {
+    const configString = await readFile(configPath, "utf8");
+    const parsedFile: unknown = JSON.parse(configString);
+
+    if (isValidUserConfig(parsedFile)) {
+      return resolveConfig(parsedFile);
+    }
+  } catch (error: unknown) {
+    if (error instanceof SyntaxError) {
+      console.warn(
+        "Invalid JSON in default config file. Skipping...\n Exception: ",
+        error
+      );
+    } else if (DEBUG) {
+      console.log(
+        ".fullsendrc file doesnt exist in project directory. Skipping..."
+      );
+    }
+  }
+
+  return null;
 }
