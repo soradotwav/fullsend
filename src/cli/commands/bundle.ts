@@ -4,7 +4,7 @@ import { createSpinner } from "../ui/progress.js";
 import type { FullsendConfig } from "../../types.js";
 import { bundle } from "../../core/bundler.js";
 import fs from "node:fs/promises";
-import { renderSuccess } from "../ui/output.js";
+import { renderEmpty, renderSuccess } from "../ui/output.js";
 import clipboardy from "clipboardy";
 import { DEFAULT_USER_CONFIG } from "../../config/index.js";
 
@@ -54,6 +54,11 @@ export function bundleCommand(program: Command) {
       try {
         const result = await bundle(directory, config);
         spinner.stop();
+
+        if (result.files.filter((f) => f.status === "loaded").length === 0) {
+          renderEmpty();
+          return;
+        }
 
         if (options.dryRun) {
           renderSuccess(result, "Dry Run", true);

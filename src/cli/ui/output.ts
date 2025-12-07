@@ -92,3 +92,23 @@ export function renderSuccess(
 export function renderError(message: string) {
   console.log(`\n  ${colors.error("✖")} ${message}\n`);
 }
+
+/**
+ * Renders a message when no files were found to bundle
+ */
+export function renderEmpty() {
+  const { dimmer, warning, text } = colors;
+
+  console.log("");
+  console.log(`  ${dimmer("┌")}  ${text("fullsend")}`);
+  console.log(`  ${dimmer("│")}`);
+  console.log(`  ${warning("○")}  No files found`);
+  console.log(
+    `  ${dimmer("│")}  All files were filtered or directory is empty`
+  );
+  console.log(`  ${dimmer("│")}`);
+  console.log(
+    `  ${dimmer("└")}  Try adjusting ignore patterns or check the path`
+  );
+  console.log("");
+}
