@@ -25,7 +25,9 @@ export function formatMarkdown(
   let output = "";
 
   if (showTree) {
-    output += `## File Structure\n\n${generateTree(files)}\n\n`;
+    output += `## File Structure\n\n\`\`\`text\n${generateTree(
+      files
+    )}\`\`\`\n\n`;
   }
 
   output += `## Files\n\n`;
