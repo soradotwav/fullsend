@@ -1,5 +1,4 @@
 export interface FullsendConfig {
-  ignorePatterns: string[];
   useGitIgnore: boolean;
   verbose: boolean;
   format: "markdown" | "xml";

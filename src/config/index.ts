@@ -132,7 +132,6 @@ export const DEFAULT_IGNORE_PATTERNS: readonly string[] = [
 
 /** Default configuration values applied when user config is missing or partial */
 export const DEFAULT_USER_CONFIG: FullsendConfig = {
-  ignorePatterns: [...DEFAULT_IGNORE_PATTERNS],
   useGitIgnore: true,
   verbose: false,
   format: "markdown",
@@ -151,12 +150,6 @@ function isValidUserConfig(obj: unknown): obj is UserConfig {
   if (typeof obj !== "object" || obj === null) return false;
 
   const config = obj as Record<string, unknown>;
-
-  if ("ignorePatterns" in config) {
-    if (!Array.isArray(config.ignorePatterns)) return false;
-    if (!config.ignorePatterns.every((item) => typeof item === "string"))
-      return false;
-  }
 
   if ("useGitIgnore" in config && typeof config.useGitIgnore !== "boolean")
     return false;
@@ -185,22 +178,13 @@ function isValidUserConfig(obj: unknown): obj is UserConfig {
 /**
  * Merges two configurations.
  * Object properties are overwritten by the override config.
- * Array properties (ignorePatterns) are concatenated and deduplicated.
  *
  * @param base - The base configuration
  * @param override - The configuration to merge on top
  * @returns The merged configuration
  */
 function mergeConfigs(base: UserConfig, override: UserConfig): UserConfig {
-  const result = { ...base, ...override };
-
-  if (base.ignorePatterns && override.ignorePatterns) {
-    result.ignorePatterns = Array.from(
-      new Set([...base.ignorePatterns, ...override.ignorePatterns])
-    );
-  }
-
-  return result;
+  return { ...base, ...override };
 }
 
 /**
