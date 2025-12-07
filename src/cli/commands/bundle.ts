@@ -19,7 +19,6 @@ export function bundleCommand(program: Command) {
     )
     .option("-v, --verbose", "Verbose output")
     .option("-d, --dry-run", "Dry run (skip output)")
-    .option("-g, --use-gitignore", "Use .gitignore", true)
     .option("--no-gitignore", "Disable .gitignore")
     .option("-t, --show-tree", "Show file tree in final output")
     .option("-m, --max-size <size>", "Max file size to process (in MB)", "10")
@@ -36,7 +35,7 @@ export function bundleCommand(program: Command) {
       const cliOverrides: Partial<FullsendConfig> = {
         format: options.format,
         verbose: options.verbose,
-        useGitIgnore: !options.noGitignore,
+        useGitIgnore: options.gitignore,
         showFileTree: options.showTree,
         maxFileSize: options.maxSize
           ? parseInt(options.maxSize) * 1024 * 1024

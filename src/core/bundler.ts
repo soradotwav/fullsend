@@ -20,7 +20,9 @@ export async function bundle(
 ): Promise<FullsendResult> {
   const startTime = Date.now();
 
-  const fileScan = await scanDirectory(projectRoot);
+  const fileScan = await scanDirectory(projectRoot, {
+    useGitIgnore: config.useGitIgnore,
+  });
 
   const files = await readFiles(fileScan, {
     maxFileSize: config.maxFileSize,
