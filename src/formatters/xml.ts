@@ -51,7 +51,7 @@ export function formatXml(files: FullsendLoadedFile[], showTree?: boolean) {
     })
     .join("\n");
 
-  let output = "";
+  let output = "<codebase>\n";
 
   if (showTree) {
     output += `<structure><![CDATA[\n${escapeCDATA(
@@ -59,7 +59,7 @@ export function formatXml(files: FullsendLoadedFile[], showTree?: boolean) {
     )}]]></structure>\n`;
   }
 
-  output += `<codebase>\n${fileElements}\n</codebase>`;
+  output += `${fileElements}\n</codebase>`;
 
   return output;
 }
