@@ -1,1 +1,5 @@
-console.log("Hello from fullsend!");
+#!/usr/bin/env node
+
+import { run } from "./cli/index.js";
+
+run(process.argv);

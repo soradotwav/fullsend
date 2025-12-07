@@ -4,7 +4,7 @@ import os from "node:os";
 import path from "node:path";
 
 /** Debug flag controlled by NODE_ENV or manual override */
-export const DEBUG: boolean = process.env.NODE_ENV === "development" || true;
+export const DEBUG: boolean = process.env.NODE_ENV === "development";
 
 /** Standard configuration filename */
 const DEFAULT_CONFIG_NAME: string = ".fullsendrc";
