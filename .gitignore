@@ -145,3 +145,4 @@ vite.config.ts.timestamp-*
 pnpm-lock.yaml
 pnpm-workspace.yaml
 .fullsendrc
+.fullsendignore

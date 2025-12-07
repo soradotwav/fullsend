@@ -126,7 +126,7 @@ export const DEFAULT_IGNORE_PATTERNS: readonly string[] = [
 
   // Misc config files that are noise
   ".gitignore",
-  ".bundleignore",
+  ".fullsendignore",
   ".defaultignore",
 ];
 
