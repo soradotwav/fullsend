@@ -25,8 +25,14 @@ export interface FullsendResultMetadata {
   duration: number;
 }
 
+export interface LightweightFile {
+  path: string;
+  size: number; // Useful for stats
+  status: "skipped" | "failed" | "loaded";
+}
+
 export interface FullsendResult {
-  files: FullsendFile[];
+  files: LightweightFile[];
   output: string;
   metadata: FullsendResultMetadata;
 }
