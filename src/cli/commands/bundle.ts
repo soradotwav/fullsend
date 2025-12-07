@@ -27,6 +27,11 @@ export function bundleCommand(program: Command) {
       const spinner = createSpinner();
       spinner.start("Loading config...");
 
+      process.on("SIGINT", () => {
+        spinner.fail("Aborted by user.");
+        process.exit(1);
+      });
+
       // Map CLI options to UserConfig
       const cliOverrides: Partial<FullsendConfig> = {
         format: options.format,
