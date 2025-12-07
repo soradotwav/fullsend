@@ -8,6 +8,16 @@ import { renderEmpty, renderSuccess } from "../ui/output.js";
 import clipboardy from "clipboardy";
 import { DEFAULT_USER_CONFIG } from "../../config/index.js";
 
+interface BundleOptions {
+  output?: string;
+  format?: "markdown" | "xml";
+  verbose?: boolean;
+  dryRun?: boolean;
+  gitignore?: boolean;
+  showTree?: boolean;
+  maxSize?: string;
+}
+
 export function bundleCommand(program: Command) {
   program
     .argument("[directory]", "Directory to scan", ".")
@@ -22,7 +32,7 @@ export function bundleCommand(program: Command) {
     .option("--no-gitignore", "Disable .gitignore")
     .option("-t, --show-tree", "Show file tree in final output")
     .option("-m, --max-size <size>", "Max file size to process (in MB)", "10")
-    .action(async (directory, options) => {
+    .action(async (directory: string, options: BundleOptions) => {
       const spinner = createSpinner();
       spinner.start("Loading config...");
 
