@@ -58,6 +58,7 @@
   },
   "dependencies": {
     "ignore": "^7.0.5",
+    "js-tiktoken": "^1.0.21",
     "p-limit": "^7.2.0"
   }
 }
