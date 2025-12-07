@@ -1,4 +1,5 @@
 import type { FullsendLoadedFile } from "../types.js";
+import { generateTree } from "../utils/tree.js";
 
 /**
  * Escapes a string for use in an XML attribute.
@@ -40,15 +41,25 @@ function escapeCDATA(str: string): string {
  * @param files - Array of loaded files to format
  * @returns XML string containing formatted files
  */
-export function formatXml(files: FullsendLoadedFile[]) {
+export function formatXml(files: FullsendLoadedFile[], showTree?: boolean) {
   const fileElements = files
     .map((file) => {
       const safePath = escapeXMLAttribute(file.relativePath);
       const safeContent = escapeCDATA(file.content);
 
-      return `<file path=${safePath}><![CDATA[${safeContent}]]></file>`;
+      return `<file path="${safePath}"><![CDATA[${safeContent}]]></file>`;
     })
     .join("\n");
 
-  return `<codebase>${fileElements}</codebase>`;
+  let output = "";
+
+  if (showTree) {
+    output += `<structure><![CDATA[\n${escapeCDATA(
+      generateTree(files)
+    )}]]></structure>\n`;
+  }
+
+  output += `<codebase>\n${fileElements}\n</codebase>`;
+
+  return output;
 }

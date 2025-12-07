@@ -7,7 +7,10 @@ import { formatMarkdown } from "./markdown.js";
  * @param files The files to format
  * @returns The formatted string
  */
-export type Formatter = (files: FullsendLoadedFile[]) => string;
+export type Formatter = (
+  files: FullsendLoadedFile[],
+  showTree?: boolean
+) => string;
 
 /**
  * Available formatter types

@@ -1,4 +1,4 @@
-import { getFormatter } from "../formatter/index.js";
+import { getFormatter } from "../formatters/index.js";
 import type {
   FullsendConfig,
   FullsendResult,
@@ -27,7 +27,7 @@ export async function bundle(
   });
 
   const formatter = getFormatter(config.format);
-  const output = formatter(files.loadedFiles);
+  const output = formatter(files.loadedFiles, config.showFileTree);
 
   const loaded: LightweightFile[] = files.loadedFiles.map((f) => ({
     path: f.relativePath,
