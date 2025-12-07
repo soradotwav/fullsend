@@ -4,6 +4,7 @@ import type {
   FullsendResult,
   LightweightFile,
 } from "../types.js";
+import { countTokens } from "../utils/tokens.js";
 import { readFiles } from "./reader.js";
 import { scanDirectory } from "./scanner.js";
 
@@ -51,7 +52,7 @@ export async function bundle(
     files: [...loaded, ...skipped, ...failed],
     output,
     metadata: {
-      totalTokens: -1, // TODO: Calculate this
+      totalTokens: await countTokens(output),
       filesSkipped: files.skippedFiles.length,
       duration: Date.now() - startTime,
     },
