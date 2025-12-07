@@ -6,7 +6,6 @@ import { bundle } from "../../core/bundler.js";
 import fs from "node:fs/promises";
 import { renderEmpty, renderSuccess } from "../ui/output.js";
 import clipboardy from "clipboardy";
-import { DEFAULT_USER_CONFIG } from "../../config/index.js";
 
 interface BundleOptions {
   output?: string;
@@ -22,16 +21,12 @@ export function bundleCommand(program: Command) {
   program
     .argument("[directory]", "Directory to scan", ".")
     .option("-o, --output <file>", "Output file path")
-    .option(
-      "-f, --format <format>",
-      "Output format (markdown or xml)",
-      "markdown"
-    )
+    .option("-f, --format <format>", "Output format (markdown or xml)")
     .option("-v, --verbose", "Verbose output")
     .option("-d, --dry-run", "Dry run (skip output)")
     .option("--no-gitignore", "Disable .gitignore")
     .option("-t, --show-tree", "Show file tree in final output")
-    .option("-m, --max-size <size>", "Max file size to process (in MB)", "10")
+    .option("-m, --max-size <size>", "Max file size to process (in MB)")
     .action(async (directory: string, options: BundleOptions) => {
       const spinner = createSpinner();
       spinner.start("Loading config...");
@@ -49,7 +44,7 @@ export function bundleCommand(program: Command) {
         showFileTree: options.showTree,
         maxFileSize: options.maxSize
           ? parseInt(options.maxSize) * 1024 * 1024
-          : DEFAULT_USER_CONFIG.maxFileSize,
+          : undefined,
       };
 
       // Filter out undefineds so we don't override defaults with undefined
