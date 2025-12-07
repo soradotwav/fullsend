@@ -1,0 +1,67 @@
+name: Publish Package
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Check if version changed
+        id: version-check
+        run: |
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
+          echo "current-version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          echo "package-name=$PACKAGE_NAME" >> $GITHUB_OUTPUT
+          
+          if npm view $PACKAGE_NAME@$CURRENT_VERSION version 2>/dev/null; then
+            echo "version-changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "version-changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install dependencies
+        if: steps.version-check.outputs.version-changed == 'true'
+        run: npm i
+
+      - name: Run tests
+        if: steps.version-check.outputs.version-changed == 'true'
+        run: npm test
+
+      - name: Publish to npm
+        if: steps.version-check.outputs.version-changed == 'true'
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        if: steps.version-check.outputs.version-changed == 'true'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.version-check.outputs.current-version }}
+          release_name: Release v${{ steps.version-check.outputs.current-version }}
+          body: |
+            ## Release v${{ steps.version-check.outputs.current-version }}
+            
+            **Install:** `npm install -g fullsend@${{ steps.version-check.outputs.current-version }}`
+            
+            **npm:** https://www.npmjs.com/package/fullsend
+          draft: false
+          prerelease: false
