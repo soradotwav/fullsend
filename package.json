@@ -56,7 +56,6 @@
     "globals": "^16.5.0",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.15",
     "typescript-eslint": "^8.48.1"
   },
   "dependencies": {
