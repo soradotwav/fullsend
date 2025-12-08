@@ -3,7 +3,7 @@ import { bundleCommand } from "./commands/bundle.js";
 import { configCommand } from "./commands/config.js";
 import { renderSplash } from "./ui/splash.js";
 
-export function run(argv: string[]) {
+export async function run(argv: string[]) {
   if (argv.length <= 2) {
     renderSplash();
     return;
@@ -19,5 +19,5 @@ export function run(argv: string[]) {
   configCommand(program);
   bundleCommand(program);
 
-  program.parse(argv);
+  await program.parseAsync(argv);
 }
