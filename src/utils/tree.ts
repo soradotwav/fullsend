@@ -4,13 +4,21 @@ interface TreeNode {
   [key: string]: TreeNode | null;
 }
 
+interface TreeOptions {
+  limit?: number;
+}
+
 /**
  * Generates a tree from a list of files
  *
  * @param files The files to generate a tree from
- * @returns The generated tree
+ * @param options Configuration options
+ * @returns The generated tree string
  */
-export function generateTree(files: FullsendFile[]): string {
+export function generateTree(
+  files: FullsendFile[],
+  options: TreeOptions = {}
+): string {
   const tree: TreeNode = {};
 
   // Build the tree
@@ -39,6 +47,25 @@ export function generateTree(files: FullsendFile[]): string {
     }
   }
 
+  let lineCount = 0;
+  let truncated = false;
+  // Default limit if not provided
+  const limit = options.limit ?? Infinity;
+
+  /**
+   * Count all items in a node recursively
+   */
+  function countItems(node: TreeNode): number {
+    let count = 0;
+    for (const [_, value] of Object.entries(node)) {
+      count++;
+      if (value !== null) {
+        count += countItems(value);
+      }
+    }
+    return count;
+  }
+
   /**
    * Recursively renders the tree
    *
@@ -47,6 +74,8 @@ export function generateTree(files: FullsendFile[]): string {
    * @returns The rendered tree
    */
   function render(currentNode: TreeNode, currentPrefix: string = ""): string {
+    if (truncated) return "";
+
     let result = "";
 
     // Sort: Directories first, then alphabetical
@@ -61,19 +90,38 @@ export function generateTree(files: FullsendFile[]): string {
     );
 
     // Render each entry
-    entries.forEach(([itemName, itemNode], index) => {
-      const isLastItem = index === entries.length - 1;
+    for (let i = 0; i < entries.length; i++) {
+      // Check limit before adding new line
+      if (lineCount >= limit) {
+        if (!truncated) {
+          truncated = true;
+          // Count remaining items at this level and below
+          let remainingCount = entries.length - i;
+          for (let j = i; j < entries.length; j++) {
+            const [_, node] = entries[j]!;
+            if (node !== null) {
+              remainingCount += countItems(node);
+            }
+          }
+          result += `${currentPrefix}└── ... (${remainingCount} more items)\n`;
+        }
+        return result;
+      }
+
+      const [itemName, itemNode] = entries[i]!;
+      const isLastItem = i === entries.length - 1;
       const connector = isLastItem ? "└── " : "├── ";
       const suffix = itemNode !== null ? "/" : "";
 
       result += `${currentPrefix}${connector}${itemName}${suffix}\n`;
+      lineCount++;
 
       // If the item is a directory, recursively render it
-      if (itemNode !== null) {
+      if (itemNode !== null && !truncated) {
         const childPrefix = currentPrefix + (isLastItem ? "    " : "│   ");
         result += render(itemNode, childPrefix);
       }
-    });
+    }
 
     return result;
   }

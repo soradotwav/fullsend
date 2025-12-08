@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { DEBUG, DEFAULT_IGNORE_PATTERNS } from "../config/index.js";
+import { DEFAULT_IGNORE_PATTERNS } from "../config/index.js";
 import ignore, { type Ignore } from "ignore";
 
 /**
@@ -15,7 +15,7 @@ export async function createFilter(
   projectDir: string,
   useGitIgnore: boolean
 ): Promise<Ignore> {
-  const patterns = await loadIgnorePatterns(projectDir, useGitIgnore);
+  const patterns = await getIgnorePatterns(projectDir, useGitIgnore);
   return ignore().add(patterns);
 }
 
@@ -41,7 +41,7 @@ function extractPatterns(content: string): string[] {
  * @param useGitIgnore - Whether to read .gitignore
  * @returns Combined list of all ignore patterns
  */
-async function loadIgnorePatterns(
+export async function getIgnorePatterns(
   projectDir: string,
   useGitIgnore: boolean
 ): Promise<string[]> {
@@ -56,9 +56,8 @@ async function loadIgnorePatterns(
         "utf8"
       );
       gitignorePatterns.push(...extractPatterns(gitignoreContent));
-    } catch (error) {
-      // File missing is fine, log only if debug
-      if (DEBUG) console.log("No .gitignore found or not readable.");
+    } catch {
+      // Squelch error
     }
   }
 
@@ -69,19 +68,13 @@ async function loadIgnorePatterns(
       "utf8"
     );
     fullsendignorePatterns.push(...extractPatterns(fullsendignoreContent));
-  } catch (error) {
-    if (DEBUG) console.log("No .fullsendignore found or not readable.");
+  } catch {
+    // Squelch error
   }
 
-  const allPatterns = [
+  return [
     ...DEFAULT_IGNORE_PATTERNS,
     ...gitignorePatterns,
     ...fullsendignorePatterns,
   ];
-
-  if (DEBUG) {
-    console.log("Loaded ignore patterns:", allPatterns);
-  }
-
-  return allPatterns;
 }

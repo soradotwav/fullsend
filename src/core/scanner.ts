@@ -42,9 +42,6 @@ export async function scanDirectory(
 
         if (entry.isDirectory()) {
           await walk(absolutePath, relativePath);
-          if (DEBUG) {
-            console.log(`Scanned directory ${absolutePath}`);
-          }
         } else if (entry.isFile()) {
           try {
             const stats = await fs.stat(absolutePath);

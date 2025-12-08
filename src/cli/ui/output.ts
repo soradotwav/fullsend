@@ -1,4 +1,9 @@
-import type { FullsendResult } from "../../types.js";
+import type {
+  FullsendFile,
+  FullsendResult,
+  LightweightFile,
+} from "../../types.js";
+import { generateTree } from "../../utils/tree.js";
 import { colors } from "./colors.js";
 
 /**
@@ -23,6 +28,54 @@ function formatNumber(num: number): string {
   })
     .format(num)
     .toLowerCase();
+}
+
+/**
+ * Renders the file tree to the console
+ */
+export function renderTree(files: LightweightFile[]) {
+  const { dim, dimmer, accent } = colors;
+
+  // Much stricter limit for console display
+  const limit = 25;
+
+  // Map LightweightFile back to structure needed for generateTree
+  // In bundler.ts, LightweightFile.path is set to relativePath
+  const treeFiles: FullsendFile[] = files.map((f) => ({
+    path: f.path,
+    relativePath: f.path,
+    size: f.size,
+  }));
+
+  const treeOutput = generateTree(treeFiles, { limit });
+
+  console.log("");
+  console.log(`  ${dim("┌")}  ${accent("File Tree")}`);
+  console.log(`  ${dim("│")}`);
+
+  if (!treeOutput || treeOutput.trim().length === 0) {
+    console.log(`  ${dim("│")}  ${dimmer("(No files)")}`);
+    console.log(`  ${dim("└")}`);
+  } else {
+    // Parse and colorize the tree output
+    const lines = treeOutput.trimEnd().split("\n");
+    for (const line of lines) {
+      // Split each line into structure characters and content
+      // Tree structure uses: │, ├──, └──, and spaces
+      const match = line.match(/^([\s│]*(?:├──|└──)?\s*)(.*)$/);
+      if (match) {
+        const [, structure, content] = match;
+        // Structure in dim, content in dimmer
+        console.log(
+          `  ${dim("│")}  ${dim(structure || "")}${dimmer(content || "")}`
+        );
+      } else {
+        // Fallback if regex doesn't match
+        console.log(`  ${dim("│")}  ${dimmer(line)}`);
+      }
+    }
+    console.log(`  ${dim("└")}`);
+  }
 }
 
 /**

@@ -3,8 +3,10 @@ import { loadConfig } from "../../config/index.js";
 import { createSpinner } from "../ui/progress.js";
 import type { FullsendConfig } from "../../types.js";
 import { bundle } from "../../core/bundler.js";
+import { getIgnorePatterns } from "../../core/filter.js"; // Import new helper
 import fs from "node:fs/promises";
-import { renderEmpty, renderSuccess } from "../ui/output.js";
+import { renderEmpty, renderSuccess, renderTree } from "../ui/output.js";
+import { colors } from "../ui/colors.js";
 import clipboardy from "clipboardy";
 
 interface BundleOptions {
@@ -60,9 +62,52 @@ export function bundleCommand(program: Command) {
         const result = await bundle(directory, config);
         spinner.stop();
 
+        // CLEAN VERBOSE OUTPUT START
+        if (config.verbose) {
+          const patterns = await getIgnorePatterns(
+            directory,
+            config.useGitIgnore
+          );
+          console.log("");
+          console.log(
+            `  ${colors.dim("┌")}  ${colors.accent("Ignore Patterns")}`
+          );
+          console.log(
+            `  ${colors.dim("│")}  ${colors.dim(
+              patterns.length + " patterns loaded"
+            )}`
+          );
+
+          // Smart pattern display - show first few patterns then count
+          const showCount = 8;
+          if (patterns.length <= showCount) {
+            console.log(
+              `  ${colors.dim("│")}  ${colors.dimmer(patterns.join(", "))}`
+            );
+          } else {
+            const shown = patterns.slice(0, showCount).join(", ");
+            const remaining = patterns.length - showCount;
+            console.log(
+              `  ${colors.dim("│")}  ${colors.dimmer(
+                shown + `, ... +${remaining} more`
+              )}`
+            );
+          }
+
+          console.log(`  ${colors.dim("└")}`);
+        }
+        // CLEAN VERBOSE OUTPUT END
+
         if (result.files.filter((f) => f.status === "loaded").length === 0) {
           renderEmpty();
           return;
+        }
+
+        // Tree Logic: Only show in console if verbose is enabled
+        // showFileTree only affects the output file content, not console display
+        if (config.verbose) {
+          const loadedFiles = result.files.filter((f) => f.status === "loaded");
+          renderTree(loadedFiles);
         }
 
         if (options.dryRun) {
