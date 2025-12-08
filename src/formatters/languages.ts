@@ -76,19 +76,27 @@ const languages: Record<string, string> = {
  * Returns the language name for a given file path based on its extension.
  * @param path The file path to get the language for.
  * @returns The language name, or an empty string if no language is found.
- *
- * @example
- * ```typescript
- * const language = getLanguageFromFile("test.ts");
- * console.log(language); // "typescript"
- * ```
  */
 export function getLanguageFromFile(path: string): string {
   const dotIndex = path.lastIndexOf(".");
+  const filename = path.toLowerCase();
 
-  if (dotIndex === -1 || dotIndex === path.length - 1) {
+  // If no extension, check if the filename itself is a language (e.g. "makefile", "dockerfile")
+  if (dotIndex === -1) {
+    return languages[filename] ?? "";
+  }
+
+  // Handle dot at end of file (e.g. "file.")
+  if (dotIndex === path.length - 1) {
     return "";
   }
 
-  return languages[path.slice(dotIndex + 1).toLowerCase()] ?? "";
+  // Check extension first
+  const extension = path.slice(dotIndex + 1).toLowerCase();
+  if (languages[extension]) {
+    return languages[extension];
+  }
+
+  // Fallback: check exact filename again (in case of weird dot files like .dockerfile if that was a thing)
+  return languages[filename] ?? "";
 }

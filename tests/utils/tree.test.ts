@@ -29,9 +29,9 @@ describe("Utils: Tree Generator", () => {
     const output = generateTree(files);
 
     expect(output).toContain("src/");
-    expect(output).toContain("│   └── components/");
-    expect(output).toContain("│       └── ui/");
-    expect(output).toContain("│           └── button.ts");
+    expect(output).toContain("    └── components/");
+    expect(output).toContain("        └── ui/");
+    expect(output).toContain("            └── button.ts");
   });
 
   it("should handle empty file lists gracefully", () => {

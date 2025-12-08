@@ -36,6 +36,6 @@ describe("Formatters: XML", () => {
     const files = [mockLoadedFile("a.txt", "A")];
     const output = formatXml(files, true);
     expect(output).toContain("<structure>");
-    expect(output).toContain("├── a.txt");
+    expect(output).toContain("└── a.txt");
   });
 });
