@@ -4,7 +4,7 @@
   "description": "Bundle files into a single formatted output for AI chat interfaces",
   "type": "module",
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=20.11.0"
   },
   "exports": {
     ".": {
