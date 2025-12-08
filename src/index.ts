@@ -2,4 +2,7 @@
 
 import { run } from "./cli/index.js";
 
-run(process.argv);
+run(process.argv).catch((error) => {
+  console.error("Fatal error:", error);
+  process.exit(1);
+});

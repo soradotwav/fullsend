@@ -19,6 +19,8 @@ interface BundleOptions {
   maxSize?: string;
 }
 
+let sigintHandler: (() => void) | null = null;
+
 export function bundleCommand(program: Command) {
   program
     .argument("[directory]", "Directory to scan", ".")
@@ -33,10 +35,13 @@ export function bundleCommand(program: Command) {
       const spinner = createSpinner();
       spinner.start("Loading config...");
 
-      process.on("SIGINT", () => {
-        spinner.fail("Aborted by user.");
-        process.exit(1);
-      });
+      if (!sigintHandler) {
+        sigintHandler = () => {
+          spinner.fail("Aborted by user.");
+          process.exit(1);
+        };
+        process.once("SIGINT", sigintHandler);
+      }
 
       // Map CLI options to UserConfig
       const cliOverrides: Partial<FullsendConfig> = {
