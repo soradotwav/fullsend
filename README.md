@@ -169,8 +169,6 @@ export const Header = () => <header>App</header>;
 ```
 ````
 
-````
-
 ### XML
 
 Optimized for Claude. Anthropic models allow for specific pre-fill cues with this format.
@@ -187,7 +185,7 @@ src/
 export const Header = () => <header>App</header>
 ]]></file>
 </codebase>
-````
+```
 
 ## Console Output
 
