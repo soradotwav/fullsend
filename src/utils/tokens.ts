@@ -1,8 +1,11 @@
 import { Tiktoken } from "js-tiktoken/lite";
-import { setImmediate } from "timers/promises";
 
-let encoderPromise = null;
+let encoderPromise: Promise<Tiktoken | null> | null = null;
 
+/**
+ * Loads the encoder
+ * @returns The encoder
+ */
 function loadEncoder() {
   if (!encoderPromise) {
     encoderPromise = import("js-tiktoken/ranks/cl100k_base")
@@ -10,29 +13,30 @@ function loadEncoder() {
         return new Tiktoken(ranks.default);
       })
       .catch((e) => {
-        console.error(e);
+        console.error("Failed to load encoder", e);
         return null;
       });
   }
+
   return encoderPromise;
 }
 
-// Start loading immediately
-loadEncoder();
-
-export async function countTokens(text) {
+/**
+ * Counts the number of tokens in a string
+ * @param text The string to count tokens in
+ * @returns The number of tokens
+ */
+export async function countTokens(text: string): Promise<number> {
   const encoder = await loadEncoder();
-  if (!encoder) {
-    return 0;
-  }
+  if (!encoder) return 0;
 
-  // Chunking strategy to prevent UI freeze on large files
-  const CHUNK_SIZE = 1000000; // ~1MB characters per chunk
-  let totalTokens = 0;
+  const CHUNK_SIZE = 500000;
 
   if (text.length < CHUNK_SIZE) {
     return encoder.encode(text).length;
   }
+
+  let totalTokens = 0;
 
   for (let i = 0; i < text.length; i += CHUNK_SIZE) {
     const chunk = text.slice(i, i + CHUNK_SIZE);
@@ -41,8 +45,7 @@ export async function countTokens(text) {
     // is worth the UX benefit of not freezing the terminal.
     totalTokens += encoder.encode(chunk).length;
 
-    // Yield to event loop to let spinner breathe
-    await setImmediate();
+    await new Promise((resolve) => setImmediate(resolve));
   }
 
   return totalTokens;
