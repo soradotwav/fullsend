@@ -34,7 +34,7 @@ export function generateTree(
       if (!part) continue;
 
       // If we're at the last part, mark it as a file (=> null)
-      if (i == path.length - 1) {
+      if (i === path.length - 1) {
         current[part] = null;
       } else {
         // If the part doesn't exist, we create it
