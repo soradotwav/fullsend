@@ -174,8 +174,8 @@ function isValidUserConfig(obj: unknown): obj is UserConfig {
     return false;
 
   if (
-    "addOutputInstruction" in config &&
-    typeof config.addOutputInstruction !== "boolean"
+    "addXmlOutputInstruction" in config &&
+    typeof config.addXmlOutputInstruction !== "boolean"
   )
     return false;
 
