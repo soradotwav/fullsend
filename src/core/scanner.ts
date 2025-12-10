@@ -64,6 +64,7 @@ export async function scanDirectory(
                 path: absolutePath,
                 relativePath: relativePath,
                 size: stats.size,
+                isDirectory: false,
                 isFiltered: false,
               };
 
@@ -72,6 +73,8 @@ export async function scanDirectory(
                 path: absolutePath,
                 relativePath: relativePath,
                 size: stats.size,
+                isDirectory: false,
+                isFiltered: false,
               });
               options.onEvent?.(relativePath);
             }
