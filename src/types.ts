@@ -12,6 +12,8 @@ export interface FullsendFile {
   path: string;
   relativePath: string;
   size: number;
+  isDirectory?: boolean;
+  isFiltered?: boolean;
 }
 
 export interface FullsendLoadedFile extends FullsendFile {
@@ -26,8 +28,13 @@ export interface FullsendResultMetadata {
 
 export interface LightweightFile {
   path: string;
-  size: number; // Useful for stats
+  size: number;
   status: "skipped" | "failed" | "loaded";
+}
+
+export interface ScanResult {
+  allFiles: FullsendFile[];
+  includedFiles: FullsendFile[];
 }
 
 export interface FullsendResult {
