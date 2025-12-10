@@ -7,7 +7,7 @@
   |__|  |_____|_____|_____|_____|_____|_|___|____/
 
   Bundle your codebase for AI chat interfaces
-  v2.1.1
+  v2.2.0
 ```
 
 ## About

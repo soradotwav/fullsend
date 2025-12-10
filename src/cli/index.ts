@@ -13,7 +13,7 @@ export async function run(argv: string[]) {
 
   program
     .name("fullsend")
-    .version("2.1.1")
+    .version("2.2.0")
     .description("Bundle your codebase for AI chat interfaces");
 
   configCommand(program);

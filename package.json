@@ -1,6 +1,6 @@
 {
   "name": "fullsend",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "Bundle files into a single formatted output for AI chat interfaces",
   "type": "module",
   "engines": {
