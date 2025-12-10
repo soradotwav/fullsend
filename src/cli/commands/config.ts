@@ -102,13 +102,14 @@ export function configCommand(program: Command) {
         return;
       }
 
-      // Add output instruction
-      const addOutputInstruction = await confirm({
-        message: "Add instruction to prevent AI from mirroring output format?",
-        initialValue: config?.addOutputInstruction ?? true,
+      // Add XML output instruction
+      const addXmlOutputInstruction = await confirm({
+        message:
+          "Add instruction to prevent AI from mirroring XML output format?",
+        initialValue: config?.addXmlOutputInstruction ?? true,
       });
 
-      if (isCancel(addOutputInstruction)) {
+      if (isCancel(addXmlOutputInstruction)) {
         cancel("Configuration cancelled");
         return;
       }
@@ -120,7 +121,7 @@ export function configCommand(program: Command) {
         useGitIgnore,
         maxFileSize: parseInt(maxFileSize) * 1024 * 1024,
         verbose,
-        addOutputInstruction,
+        addXmlOutputInstruction,
       };
 
       const saved = await saveConfigToDisk(modifiedConfig);

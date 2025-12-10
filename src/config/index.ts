@@ -137,7 +137,7 @@ export const DEFAULT_USER_CONFIG: FullsendConfig = {
   format: "markdown",
   showFileTree: false,
   maxFileSize: 10 * 1024 * 1024,
-  addOutputInstruction: true,
+  addXmlOutputInstruction: true,
 };
 
 /**

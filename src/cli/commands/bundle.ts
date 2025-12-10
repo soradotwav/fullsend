@@ -32,7 +32,7 @@ export function bundleCommand(program: Command) {
     .option("--no-gitignore", "Disable .gitignore")
     .option("-t, --show-tree", "Show file tree in final output")
     .option("-m, --max-size <size>", "Max file size to process (in MB)")
-    .option("--no-instruction", "Disable AI response instructions")
+    .option("--no-instruction", "Disable XML output instructions")
     .action(async (directory: string, options: BundleOptions) => {
       const spinner = createSpinner();
       spinner.start("Loading config...");
@@ -54,7 +54,7 @@ export function bundleCommand(program: Command) {
         maxFileSize: options.maxSize
           ? parseInt(options.maxSize) * 1024 * 1024
           : undefined,
-        addOutputInstruction: options.instruction,
+        addXmlOutputInstruction: options.instruction,
       };
 
       // Filter out undefineds so we don't override defaults with undefined

@@ -35,7 +35,7 @@ export async function bundle(
     files.loadedFiles,
     config.showFileTree,
     scanResult.allFiles,
-    config.addOutputInstruction
+    config.addXmlOutputInstruction
   );
 
   const loaded: LightweightFile[] = files.loadedFiles.map((f) => ({
