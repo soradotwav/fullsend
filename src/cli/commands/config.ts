@@ -102,6 +102,17 @@ export function configCommand(program: Command) {
         return;
       }
 
+      // Add output instruction
+      const addOutputInstruction = await confirm({
+        message: "Add instruction to prevent AI from mirroring output format?",
+        initialValue: config?.addOutputInstruction ?? true,
+      });
+
+      if (isCancel(addOutputInstruction)) {
+        cancel("Configuration cancelled");
+        return;
+      }
+
       // Save
       const modifiedConfig: UserConfig = {
         format,
@@ -109,6 +120,7 @@ export function configCommand(program: Command) {
         useGitIgnore,
         maxFileSize: parseInt(maxFileSize) * 1024 * 1024,
         verbose,
+        addOutputInstruction,
       };
 
       const saved = await saveConfigToDisk(modifiedConfig);
