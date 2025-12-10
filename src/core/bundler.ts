@@ -8,6 +8,9 @@ import { countTokens } from "../utils/tokens.js";
 import { readFiles } from "./reader.js";
 import { scanDirectory } from "./scanner.js";
 
+const INSTRUCTION_TEXT =
+  "Note: This is the codebase context. When responding, please do NOT mirror this format. Reply in standard Markdown unless the user requests otherwise.";
+
 /**
  * Bundles a project into a single file
  * @param projectRoot The root directory of the project
@@ -31,11 +34,20 @@ export async function bundle(
 
   const formatter = getFormatter(config.format);
   // Pass all files for tree generation, but only loaded files for content
-  const output = formatter(
+  let output = formatter(
     files.loadedFiles,
     config.showFileTree,
     scanResult.allFiles
   );
+
+  // Add instruction to prevent AI from mirroring output format
+  if (config.addOutputInstruction) {
+    if (config.format === "xml") {
+      output = `<system>\n${INSTRUCTION_TEXT}\n</system>\n\n${output}`;
+    } else {
+      output = `${INSTRUCTION_TEXT}\n\n${output}`;
+    }
+  }
 
   const loaded: LightweightFile[] = files.loadedFiles.map((f) => ({
     path: f.relativePath,
