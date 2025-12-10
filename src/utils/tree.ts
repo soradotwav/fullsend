@@ -60,7 +60,7 @@ export function generateTree(
           current[part] = {};
         }
 
-        current = current[part] as TreeNode;
+        current = current[part];
       }
     }
   }
