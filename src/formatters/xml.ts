@@ -47,7 +47,7 @@ export function formatXml(
     // Use allFiles if provided (includes filtered), otherwise fall back to loaded files
     const treeFiles = allFiles || files;
     output += `<structure><![CDATA[\n${escapeCDATA(
-      generateTree(treeFiles, { showFiltered: true })
+      generateTree(treeFiles)
     )}]]></structure>\n`;
   }
 

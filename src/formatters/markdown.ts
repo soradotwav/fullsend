@@ -21,9 +21,9 @@ export function formatMarkdown(
   if (showTree) {
     // Use allFiles if provided (includes filtered), otherwise fall back to loaded files
     const treeFiles = allFiles || files;
-    output += `## File Structure\n\n\`\`\`text\n${generateTree(treeFiles, {
-      showFiltered: true,
-    })}\`\`\`\n\n`;
+    output += `## File Structure\n\n\`\`\`text\n${generateTree(
+      treeFiles
+    )}\`\`\`\n\n`;
   }
 
   output += `## Files\n\n`;

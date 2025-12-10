@@ -6,7 +6,6 @@ interface TreeNode {
 
 interface TreeOptions {
   limit?: number;
-  showFiltered?: boolean;
 }
 
 /**
