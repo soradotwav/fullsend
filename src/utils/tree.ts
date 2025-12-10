@@ -6,6 +6,7 @@ interface TreeNode {
 
 interface TreeOptions {
   limit?: number;
+  showFiltered?: boolean;
 }
 
 /**
@@ -20,11 +21,14 @@ export function generateTree(
   options: TreeOptions = {}
 ): string {
   const tree: TreeNode = {};
+  // Track filtered directories separately
+  const filteredDirs = new Set<string>();
 
   // Build the tree
   for (const file of files) {
     const path = file.relativePath.split("/");
     let current = tree;
+    let currentPath = "";
 
     // Check each part of the path
     for (let i = 0; i < path.length; i++) {
@@ -33,16 +37,30 @@ export function generateTree(
       // Safety check; Should never happen but lets typescript know it can't be undefined
       if (!part) continue;
 
-      // If we're at the last part, mark it as a file (=> null)
+      currentPath = currentPath ? `${currentPath}/${part}` : part;
+
+      // If we're at the last part
       if (i === path.length - 1) {
-        current[part] = null;
+        if (file.isDirectory) {
+          // Create directory node
+          if (!current[part]) {
+            current[part] = {};
+          }
+          // Track if this directory is filtered
+          if (file.isFiltered) {
+            filteredDirs.add(file.relativePath);
+          }
+        } else {
+          // It's a file - only add if not filtered
+          current[part] = null;
+        }
       } else {
         // If the part doesn't exist, we create it
         if (!current[part]) {
           current[part] = {};
         }
 
-        current = current[part]!;
+        current = current[part] as TreeNode;
       }
     }
   }
@@ -71,9 +89,14 @@ export function generateTree(
    *
    * @param currentNode The current node to render
    * @param currentPrefix The current prefix to use
+   * @param currentPath The current path for checking filtered status
    * @returns The rendered tree
    */
-  function render(currentNode: TreeNode, currentPrefix: string = ""): string {
+  function render(
+    currentNode: TreeNode,
+    currentPrefix: string = "",
+    currentPath: string = ""
+  ): string {
     if (truncated) return "";
 
     let result = "";
@@ -111,15 +134,31 @@ export function generateTree(
       const [itemName, itemNode] = entries[i]!;
       const isLastItem = i === entries.length - 1;
       const connector = isLastItem ? "└── " : "├── ";
-      const suffix = itemNode !== null ? "/" : "";
+      const isDirectory = itemNode !== null;
 
-      result += `${currentPrefix}${connector}${itemName}${suffix}\n`;
+      // Build the full path for this item
+      const itemPath = currentPath ? `${currentPath}/${itemName}` : itemName;
+
+      // Check if this directory is filtered
+      const isFiltered = isDirectory && filteredDirs.has(itemPath);
+
+      if (isFiltered) {
+        // Show filtered directories as "dirname/..."
+        result += `${currentPrefix}${connector}${itemName}/...\n`;
+      } else if (isDirectory) {
+        // Regular directory
+        result += `${currentPrefix}${connector}${itemName}/\n`;
+      } else {
+        // Regular file
+        result += `${currentPrefix}${connector}${itemName}\n`;
+      }
+
       lineCount++;
 
-      // If the item is a directory, recursively render it
-      if (itemNode !== null && !truncated) {
+      // If it's a non-filtered directory, recursively render its contents
+      if (isDirectory && !truncated && !isFiltered) {
         const childPrefix = currentPrefix + (isLastItem ? "    " : "│   ");
-        result += render(itemNode, childPrefix);
+        result += render(itemNode, childPrefix, itemPath);
       }
     }
 

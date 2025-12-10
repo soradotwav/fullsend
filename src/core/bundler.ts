@@ -20,17 +20,22 @@ export async function bundle(
 ): Promise<FullsendResult> {
   const startTime = Date.now();
 
-  const fileScan = await scanDirectory(projectRoot, {
+  const scanResult = await scanDirectory(projectRoot, {
     useGitIgnore: config.useGitIgnore,
   });
 
-  const files = await readFiles(fileScan, {
+  const files = await readFiles(scanResult.includedFiles, {
     maxFileSize: config.maxFileSize,
     concurrency: 20,
   });
 
   const formatter = getFormatter(config.format);
-  const output = formatter(files.loadedFiles, config.showFileTree);
+  // Pass all files for tree generation, but only loaded files for content
+  const output = formatter(
+    files.loadedFiles,
+    config.showFileTree,
+    scanResult.allFiles
+  );
 
   const loaded: LightweightFile[] = files.loadedFiles.map((f) => ({
     path: f.relativePath,

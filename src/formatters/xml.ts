@@ -1,11 +1,8 @@
-import type { FullsendLoadedFile } from "../types.js";
+import type { FullsendLoadedFile, FullsendFile } from "../types.js";
 import { generateTree } from "../utils/tree.js";
 
 /**
  * Escapes a string for use in an XML attribute.
- *
- * @param str - The string to escape
- * @returns The escaped string
  */
 function escapeXMLAttribute(str: string): string {
   return str
@@ -17,9 +14,6 @@ function escapeXMLAttribute(str: string): string {
 
 /**
  * Escapes a string for use in a CDATA section.
- *
- * @param str - The string to escape
- * @returns The escaped string
  */
 function escapeCDATA(str: string): string {
   return str.replace(/]]>/g, "]]]]><![CDATA[>");
@@ -27,21 +21,17 @@ function escapeCDATA(str: string): string {
 
 /**
  * Formats an array of loaded files into an XML string.
- * Each file is formatted as a file element with its content.
- *
- * The XML string is formatted as follows:
- *
- * ```xml
- * <codebase>
- *   <file path="relative/path/to/file"><![CDATA[{file content}]]></file>
- *   ...
- * </codebase>
- * ```
  *
  * @param files - Array of loaded files to format
+ * @param showTree - Whether to include the file tree
+ * @param allFiles - All files including filtered ones for complete tree
  * @returns XML string containing formatted files
  */
-export function formatXml(files: FullsendLoadedFile[], showTree?: boolean) {
+export function formatXml(
+  files: FullsendLoadedFile[],
+  showTree?: boolean,
+  allFiles?: FullsendFile[]
+) {
   const fileElements = files
     .map((file) => {
       const safePath = escapeXMLAttribute(file.relativePath);
@@ -54,8 +44,10 @@ export function formatXml(files: FullsendLoadedFile[], showTree?: boolean) {
   let output = "<codebase>\n";
 
   if (showTree) {
+    // Use allFiles if provided (includes filtered), otherwise fall back to loaded files
+    const treeFiles = allFiles || files;
     output += `<structure><![CDATA[\n${escapeCDATA(
-      generateTree(files)
+      generateTree(treeFiles, { showFiltered: true })
     )}]]></structure>\n`;
   }
 
