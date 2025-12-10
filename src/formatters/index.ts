@@ -12,7 +12,8 @@ import { formatMarkdown } from "./markdown.js";
 export type Formatter = (
   files: FullsendLoadedFile[],
   showTree?: boolean,
-  allFiles?: FullsendFile[]
+  allFiles?: FullsendFile[],
+  addInstruction?: boolean
 ) => string;
 
 /**

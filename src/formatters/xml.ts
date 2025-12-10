@@ -19,6 +19,9 @@ function escapeCDATA(str: string): string {
   return str.replace(/]]>/g, "]]]]><![CDATA[>");
 }
 
+const INSTRUCTION_TEXT =
+  "Note: This is the codebase context. When responding, please do NOT mirror this format. Reply in standard Markdown unless the user requests otherwise.";
+
 /**
  * Formats an array of loaded files into an XML string.
  *
@@ -30,7 +33,8 @@ function escapeCDATA(str: string): string {
 export function formatXml(
   files: FullsendLoadedFile[],
   showTree?: boolean,
-  allFiles?: FullsendFile[]
+  allFiles?: FullsendFile[],
+  addInstruction?: boolean
 ) {
   const fileElements = files
     .map((file) => {
@@ -42,6 +46,11 @@ export function formatXml(
     .join("\n");
 
   let output = "<codebase>\n";
+
+  // Add instruction to prevent AI from mirroring output format. This is added to the XML output.
+  if (addInstruction) {
+    output += `<note>${INSTRUCTION_TEXT}</note>\n`;
+  }
 
   if (showTree) {
     // Use allFiles if provided (includes filtered), otherwise fall back to loaded files
