@@ -17,16 +17,16 @@ Fullsend transforms your project into a single, formatted string optimized for L
 ## Installation
 
 ```
-┌─ Package Managers ─────────────────────────────────────────────────────────┐
-│                                                                            │
-│  npm     npm install -g fullsend                                           │
-│  pnpm    pnpm add -g fullsend                                              │
-│  yarn    yarn global add fullsend                                          │
-│  bun     bun install -g fullsend                                           │
-│                                                                            │
-│  npx     npx fullsend                    (no install)                      │
-│                                                                            │
-└────────────────────────────────────────────────────────────────────────────┘
+┌─ Package Managers ──────────────────────────────────────────────────────┐
+│                                                                         │
+│  npm     npm install -g fullsend                                        │
+│  pnpm    pnpm add -g fullsend                                           │
+│  yarn    yarn global add fullsend                                       │
+│  bun     bun install -g fullsend                                        │
+│                                                                         │
+│  npx     npx fullsend                    (no install)                   │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
 ```
 
 ## Quick Start
@@ -46,11 +46,11 @@ $ fullsend config                # Interactive configuration
 ## Command Reference
 
 ```
-┌─ Synopsis ─────────────────────────────────────────────────────────────────┐
-│                                                                            │
-│  fullsend [directory] [options]                                            │
-│                                                                            │
-└────────────────────────────────────────────────────────────────────────────┘
+┌─ Synopsis ──────────────────────────────────────────────────────────────┐
+│                                                                         │
+│  fullsend [directory] [options]                                         │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
 ```
 
 ```
@@ -63,6 +63,7 @@ $ fullsend config                # Interactive configuration
 │  -m, --max-size <mb>      Maximum file size to process (default: 10MB)     │
 │  -v, --verbose            Show detailed ignored/loaded file logs           │
 │  --no-gitignore           Disable .gitignore pattern matching              │
+│  --no-instructions        Disable XML output instructions                  │
 │  -h, --help               Display help information                         │
 │                                                                            │
 └────────────────────────────────────────────────────────────────────────────┘
@@ -92,6 +93,9 @@ $ fullsend config
 ◆  Enable verbose logging?
 │  ○ Yes  ● No
 │
+◆  Add instruction to prevent AI from mirroring XML output format?
+│  ● Yes  ○ No
+│
 ◇  Saved to ~/.fullsendrc
 ```
 
@@ -107,7 +111,8 @@ Created by the config wizard. You can also place a `.fullsendrc` file in your pr
   "showFileTree": false,
   "useGitIgnore": true,
   "maxFileSize": 10485760,
-  "verbose": false
+  "verbose": false,
+  "addXmlOutputInstruction": true
 }
 ```
 
