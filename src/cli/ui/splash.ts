@@ -12,7 +12,7 @@ export function renderSplash() {
 
   console.log(accent(LOGO));
   console.log(`  ${dim("Bundle your codebase for AI chats")}`);
-  console.log(`  ${dimmer("v2.0.0")}`);
+  console.log(`  ${dimmer("v2.2.0")}`);
   console.log("");
   console.log(`  ${text("Usage:")}`);
   console.log(

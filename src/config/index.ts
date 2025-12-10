@@ -137,6 +137,7 @@ export const DEFAULT_USER_CONFIG: FullsendConfig = {
   format: "markdown",
   showFileTree: false,
   maxFileSize: 10 * 1024 * 1024,
+  addXmlOutputInstruction: true,
 };
 
 /**
@@ -170,6 +171,12 @@ function isValidUserConfig(obj: unknown): obj is UserConfig {
     return false;
 
   if ("maxFileSize" in config && (config.maxFileSize as number) < 0)
+    return false;
+
+  if (
+    "addXmlOutputInstruction" in config &&
+    typeof config.addXmlOutputInstruction !== "boolean"
+  )
     return false;
 
   return true;

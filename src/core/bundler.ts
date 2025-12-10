@@ -31,10 +31,11 @@ export async function bundle(
 
   const formatter = getFormatter(config.format);
   // Pass all files for tree generation, but only loaded files for content
-  const output = formatter(
+  let output = formatter(
     files.loadedFiles,
     config.showFileTree,
-    scanResult.allFiles
+    scanResult.allFiles,
+    config.addXmlOutputInstruction
   );
 
   const loaded: LightweightFile[] = files.loadedFiles.map((f) => ({

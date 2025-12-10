@@ -102,6 +102,18 @@ export function configCommand(program: Command) {
         return;
       }
 
+      // Add XML output instruction
+      const addXmlOutputInstruction = await confirm({
+        message:
+          "Add instruction to prevent AI from mirroring XML output format?",
+        initialValue: config?.addXmlOutputInstruction ?? true,
+      });
+
+      if (isCancel(addXmlOutputInstruction)) {
+        cancel("Configuration cancelled");
+        return;
+      }
+
       // Save
       const modifiedConfig: UserConfig = {
         format,
@@ -109,6 +121,7 @@ export function configCommand(program: Command) {
         useGitIgnore,
         maxFileSize: parseInt(maxFileSize) * 1024 * 1024,
         verbose,
+        addXmlOutputInstruction,
       };
 
       const saved = await saveConfigToDisk(modifiedConfig);

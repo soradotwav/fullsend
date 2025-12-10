@@ -4,6 +4,7 @@ export interface FullsendConfig {
   format: "markdown" | "xml";
   showFileTree: boolean;
   maxFileSize: number;
+  addXmlOutputInstruction: boolean;
 }
 
 export type UserConfig = Partial<FullsendConfig>;
